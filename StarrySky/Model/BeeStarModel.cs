@@ -113,12 +113,12 @@ namespace StarrySky.Model
                     }
                 else
                 {
-                    int beesAmount = _random.Next(5, 15);
+                    int beesAmount = _random.Next(5, 16);
                     Bee newBee = null;
 
                     for (int i = 0; i < beesAmount; i++)
                     {
-                        var beeSize = new Size(_random.Next(40, 150), _random.Next(40, 150));
+                        var beeSize = new Size(_random.Next(40, 151), _random.Next(40, 151));
                         var beeLocation = FindNonOverlappingPoint(beeSize);
                         newBee = new Bee(beeLocation, beeSize);
 
@@ -147,7 +147,7 @@ namespace StarrySky.Model
                     }
                 else
                 {
-                    int starsAmount = _random.Next(5, 10);
+                    int starsAmount = _random.Next(5, 11);
                     for (int i = 0; i < starsAmount; i++)
                     {
                         CreateAStar();
@@ -182,22 +182,21 @@ namespace StarrySky.Model
             {
                 // Create new random point in the play area
                 Point rectLeftTopCorner = new Point(
-                    _random.Next(0, (int)PlayAreaSize.Width), _random.Next(0, (int)PlayAreaSize.Height));
+                    _random.Next((int)PlayAreaSize.Width-150), _random.Next((int)PlayAreaSize.Height)-150);
                 // With this point and given size create rectangle
                 Rect testRectangle = new Rect(rectLeftTopCorner, size);
-                foreach (Bee bee in _bees.Keys)
-                {
-                    // Test if rectangle is overlapping with any bee
-                    if (!RectsOverlap(testRectangle, bee.Position))
-                        return rectLeftTopCorner;
-                }
-                foreach (Star star in _stars.Keys)
-                {
-                    // Test if rectangle is overlapping with any star
-                    if (!RectsOverlap(testRectangle, new Rect(star.Location, StarSize)))
-                        return rectLeftTopCorner;
-                }
-                if (loopsCounter > 1000) // Limit amount of test loops
+
+                var overlappingBees =
+                    from bee in _bees.Keys
+                    where RectsOverlap(testRectangle, bee.Position)
+                    select bee;
+
+                var overlappingStars =
+                    from star in _stars.Keys
+                    where RectsOverlap(testRectangle, new Rect(star.Location, StarSize))
+                    select star;
+
+                if ((overlappingBees.Count() + overlappingStars.Count()) == 0||loopsCounter > 1000) // Limit amount of test loops
                     return rectLeftTopCorner;
                 loopsCounter++;
             }

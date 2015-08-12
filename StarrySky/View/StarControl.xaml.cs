@@ -26,12 +26,12 @@ namespace StarrySky.View
 
         public void FadeIn()
         {
-            throw new NotImplementedException();
+            fadeInStoryboard.Begin();
         }
 
         public void FadeOut()
         {
-            throw new NotImplementedException();
+            fadeOutStoryboard.Begin();
         }
     }
 }
